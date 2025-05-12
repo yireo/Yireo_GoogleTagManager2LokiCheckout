@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<components xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="urn:magento:module:Yireo_LokiComponents:etc/loki_components.xsd">
+    <component
+        name="yireo_googletagmanager2.loki_checkout.component"
+        viewModel="Yireo\GoogleTagManager2LokiCheckout\Component\GoogleTagManagerViewModel"/>
+</components>

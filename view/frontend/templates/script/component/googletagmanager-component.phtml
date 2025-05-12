@@ -1,0 +1,11 @@
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('LokiCheckoutGoogleTagManager', () => ({
+            ...LokiDataLoaderComponentPartial,
+            init() {
+                this.loadData();
+                yireoGoogleTagManager2Pusher(this.beginCheckout, 'Loki Checkout');
+            }
+        }));
+    });
+</script>

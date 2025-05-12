@@ -1,0 +1,12 @@
+{
+    "modules": [
+        "Magento_Checkout",
+        "Yireo_LokiComponents",
+        "Yireo_GoogleTagManager2"
+    ],
+    "components": [
+        "yireo_googletagmanager2.loki_checkout.component"
+    ],
+    "config": [],
+    "tests": []
+}
