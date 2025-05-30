@@ -8,6 +8,7 @@ use Yireo\GoogleTagManager2\DataLayer\Event\AddPaymentInfo;
 use Yireo\GoogleTagManager2\DataLayer\Event\AddShippingInfo;
 use Yireo\GoogleTagManager2\DataLayer\Event\BeginCheckout;
 use Yireo\LokiComponents\Component\ComponentViewModel;
+use Yireo\LokiComponents\Util\Ajax;
 
 class GoogleTagManagerViewModel extends ComponentViewModel
 {
@@ -16,6 +17,7 @@ class GoogleTagManagerViewModel extends ComponentViewModel
         private BeginCheckout $beginCheckout,
         private AddShippingInfo $addShippingInfo,
         private AddPaymentInfo $addPaymentInfo,
+        private Ajax $ajax,
     ) {
     }
 
@@ -28,27 +30,57 @@ class GoogleTagManagerViewModel extends ComponentViewModel
     {
         return [
             ...parent::getJsData(),
-            'beginCheckout' => $this->getBeginCheckoutInfo(),
-            'shippingInfo' => $this->getShippingInfo(),
-            'paymentInfo' => $this->getPaymentInfo(),
+            'gtmEvents' => $this->getGtmEvents()
         ];
     }
 
-    private function getBeginCheckoutInfo(): array
+    private function getGtmEvents(): array
     {
+        $events = [];
+        $events[] = $this->getBeginCheckoutInfo();
+        $events[] = $this->getShippingInfo();
+        $events[] = $this->getPaymentInfo();
+
+        return $events;
+    }
+
+    private function getBeginCheckoutInfo(): false|array
+    {
+        if ($this->ajax->isAjax()) {
+            return false;
+        }
+
         return $this->beginCheckout->get();
     }
 
-    private function getShippingInfo(): array
+    private function getShippingInfo(): false|array
     {
-        return $this->addShippingInfo->get();
+        $shippingInfo = $this->addShippingInfo->get();
+        if (empty($shippingInfo)) {
+            return false;
+        }
+
+        if (empty($shippingInfo['ecommerce']['shipping_tier'])) {
+            return false;
+        }
+
+        return $shippingInfo;
     }
 
-    private function getPaymentInfo(): array
+    private function getPaymentInfo(): false|array
     {
         $this->addPaymentInfo->setCartId((int)$this->checkoutSession->getQuote()->getId());
         $this->addPaymentInfo->setPaymentMethod((string)$this->checkoutSession->getQuote()->getPayment()->getMethod());
 
-        return $this->addPaymentInfo->get();
+        $paymentInfo = $this->addPaymentInfo->get();
+        if (empty($paymentInfo)) {
+            return false;
+        }
+
+        if (empty($paymentInfo['ecommerce']['payment_type'])) {
+            return false;
+        }
+
+        return $paymentInfo;
     }
 }

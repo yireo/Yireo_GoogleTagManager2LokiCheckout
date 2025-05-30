@@ -2,9 +2,19 @@
     document.addEventListener('alpine:init', () => {
         Alpine.data('LokiCheckoutGoogleTagManager', () => ({
             ...LokiDataLoaderComponentPartial,
+            events: [],
             init() {
                 this.loadData();
-                yireoGoogleTagManager2Pusher(this.beginCheckout, 'Loki Checkout');
+                this.gtmEvents.forEach(eventData => {
+                    if (!eventData) {
+                        return;
+                    }
+
+                    yireoGoogleTagManager2Pusher(this.fromProxyToObject(eventData), eventData.event);
+                });
+            },
+            fromProxyToObject(proxy) {
+                return JSON.parse(JSON.stringify(proxy))
             }
         }));
     });

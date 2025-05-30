@@ -4,4 +4,12 @@
     <component
         name="yireo_googletagmanager2.loki_checkout.component"
         viewModel="Yireo\GoogleTagManager2LokiCheckout\Component\GoogleTagManagerViewModel"/>
+
+    <component name="loki-checkout.payment.methods">
+        <target name="yireo_googletagmanager2.loki_checkout.component"/>
+    </component>
+
+    <component name="loki-checkout.shipping.methods">
+        <target name="yireo_googletagmanager2.loki_checkout.component"/>
+    </component>
 </components>
