@@ -5,7 +5,9 @@
         "Yireo_GoogleTagManager2"
     ],
     "components": [
-        "yireo_googletagmanager2.loki_checkout.component"
+        "yireo_googletagmanager2.loki_checkout.component",
+        "loki-checkout.payment.methods",
+        "loki-checkout.shipping.methods"
     ],
     "config": [],
     "tests": []
