@@ -7,8 +7,8 @@ use Magento\Checkout\Model\Session as CheckoutSession;
 use Yireo\GoogleTagManager2\DataLayer\Event\AddPaymentInfo;
 use Yireo\GoogleTagManager2\DataLayer\Event\AddShippingInfo;
 use Yireo\GoogleTagManager2\DataLayer\Event\BeginCheckout;
-use Yireo\LokiComponents\Component\ComponentViewModel;
-use Yireo\LokiComponents\Util\Ajax;
+use Loki\Components\Component\ComponentViewModel;
+use Loki\Components\Util\Ajax;
 
 class GoogleTagManagerViewModel extends ComponentViewModel
 {
