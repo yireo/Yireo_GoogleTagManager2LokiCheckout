@@ -1,6 +1,6 @@
 {
     "name": "yireo/magento2-googletagmanager2-loki-checkout",
-    "version": "1.0.1",
+    "version": "2.0.0",
     "description": "N/A",
     "type": "magento2-module",
     "require": {
