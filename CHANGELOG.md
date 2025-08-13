@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.1] - 13 August 2025
+### Fixed
+- Prepare release
+- Rename LokiDataLoaderComponentPartial to LokiLoadDataComponentPartial
+
 ## [2.0.0] - 22 July 2025
 ### Fixed
 - Rename composer package from `yireo/magento2-loki*` to `loki/magento2*`
