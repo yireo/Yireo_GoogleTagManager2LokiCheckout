@@ -1,0 +1,15 @@
+<script>
+    document.addEventListener('loki:init:localstorage-store', () => {
+        Alpine.effect(() => {
+            const checkoutSection = Alpine.store('LokiLocalStorage').get('loki-checkout');
+            checkoutSection.gtm_events.forEach(eventData => {
+                if (!eventData) {
+                    return;
+                }
+
+                eventData = JSON.parse(JSON.stringify(eventData));
+                yireoGoogleTagManager2Pusher(eventData, eventData.event);
+            });
+        });
+    });
+</script>

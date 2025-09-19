@@ -1,37 +1,27 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
-namespace Yireo\GoogleTagManager2LokiCheckout\Component;
+namespace Yireo\GoogleTagManager2LokiCheckout\Plugin;
 
+use LokiCheckout\Core\CustomerData\Checkout;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Yireo\GoogleTagManager2\DataLayer\Event\AddPaymentInfo;
 use Yireo\GoogleTagManager2\DataLayer\Event\AddShippingInfo;
 use Yireo\GoogleTagManager2\DataLayer\Event\BeginCheckout;
-use Loki\Components\Component\ComponentViewModel;
-use Loki\Components\Util\Ajax;
 
-class GoogleTagManagerViewModel extends ComponentViewModel
+class AppendGtmEventsToLokiCheckoutSectionPlugin
 {
     public function __construct(
         private CheckoutSession $checkoutSession,
         private BeginCheckout $beginCheckout,
         private AddShippingInfo $addShippingInfo,
         private AddPaymentInfo $addPaymentInfo,
-        private Ajax $ajax,
     ) {
     }
 
-    public function getJsComponentName(): ?string
+    public function afterGetSectionData(Checkout $checkoutSection, array $sectionData): array
     {
-        return 'LokiCheckoutGoogleTagManager';
-    }
-
-    public function getJsData(): array
-    {
-        return [
-            ...parent::getJsData(),
-            'gtmEvents' => $this->getGtmEvents()
-        ];
+        $sectionData['gtm_events'] = $this->getGtmEvents();
+        return $sectionData;
     }
 
     private function getGtmEvents(): array
@@ -46,10 +36,6 @@ class GoogleTagManagerViewModel extends ComponentViewModel
 
     private function getBeginCheckoutInfo(): false|array
     {
-        if ($this->ajax->isAjax()) {
-            return false;
-        }
-
         return $this->beginCheckout->get();
     }
 
