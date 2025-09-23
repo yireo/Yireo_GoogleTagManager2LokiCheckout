@@ -4,6 +4,7 @@ namespace Yireo\GoogleTagManager2LokiCheckout\Plugin;
 
 use LokiCheckout\Core\CustomerData\Checkout;
 use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Yireo\GoogleTagManager2\DataLayer\Event\AddPaymentInfo;
 use Yireo\GoogleTagManager2\DataLayer\Event\AddShippingInfo;
 use Yireo\GoogleTagManager2\DataLayer\Event\BeginCheckout;
@@ -27,9 +28,18 @@ class AppendGtmEventsToLokiCheckoutSectionPlugin
     private function getGtmEvents(): array
     {
         $events = [];
-        $events[] = $this->getBeginCheckoutInfo();
-        $events[] = $this->getShippingInfo();
-        $events[] = $this->getPaymentInfo();
+        if (false === (bool)$this->checkoutSession->hasQuote()) {
+            return $events;
+        }
+
+        try {
+            $events[] = $this->getBeginCheckoutInfo();
+            $events[] = $this->getShippingInfo();
+            $events[] = $this->getPaymentInfo();
+        } catch (NoSuchEntityException $entityException) {
+
+        }
+
 
         return $events;
     }
