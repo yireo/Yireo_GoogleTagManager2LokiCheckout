@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
-        <referenceContainer name="loki.script">
+        <referenceBlock name="loki.script">
             <block
                 name="yireo_googletagmanager2.loki_checkout.script.localstorage-listener"
                 template="Yireo_GoogleTagManager2LokiCheckout::script/localstorage-listener.phtml"
                 ifconfig="googletagmanager2/settings/enabled"/>
-        </referenceContainer>
+        </referenceBlock>
     </body>
 </page>
