@@ -2,6 +2,10 @@
     document.addEventListener('loki:init:localstorage-store', () => {
         Alpine.effect(() => {
             const checkoutSection = Alpine.store('LokiLocalStorage').get('loki-checkout');
+            if (!checkoutSection) {
+                return;
+            }
+
             checkoutSection.gtm_events.forEach(eventData => {
                 if (!eventData) {
                     return;
