@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.2] - 27 September 2025
+### Fixed
+- Failsafe for when store is not present yet
+- Change container to block
+- Prevent empty quote from causing exception
+- New structure of localStorage listener
+- Add CI files
+
 ## [2.0.1] - 13 August 2025
 ### Fixed
 - Prepare release
