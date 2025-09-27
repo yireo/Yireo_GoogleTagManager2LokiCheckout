@@ -1,34 +1,42 @@
 {
     "sequence": [
-        "Loki_Components",
+        "LokiCheckout_Core",
         "Magento_Checkout",
+        "Magento_Store",
         "Yireo_GoogleTagManager2"
     ],
     "modules": [
+        "LokiCheckout_Core",
         "Loki_Base",
         "Loki_Components",
         "Loki_CssUtils",
+        "Loki_FieldComponents",
+        "Loki_MapComponents",
         "Magento_Backend",
         "Magento_Catalog",
         "Magento_CatalogInventory",
         "Magento_CatalogSearch",
         "Magento_Checkout",
+        "Magento_CheckoutAgreements",
         "Magento_Config",
         "Magento_ConfigurableProduct",
         "Magento_Cookie",
         "Magento_Customer",
+        "Magento_Directory",
         "Magento_Eav",
+        "Magento_Newsletter",
         "Magento_Payment",
         "Magento_Quote",
         "Magento_Sales",
+        "Magento_Shipping",
         "Magento_Store",
         "Magento_Tax",
+        "Magento_Vault",
         "Yireo_CspUtilities",
-        "Yireo_GoogleTagManager2"
+        "Yireo_GoogleTagManager2",
+        "Yireo_HyvaThemeAutoRegistration"
     ],
     "components": [],
     "config": [],
-    "tests": [],
-    "phpcs_severity": "8",
-    "phpstan_level": "3"
+    "tests": []
 }
