@@ -4,9 +4,9 @@
     "description": "N/A",
     "type": "magento2-module",
     "require": {
+        "loki/magento2-components": "^2.0",
         "magento/framework": "^102.0 || ^103.0",
         "magento/module-checkout": "^100.0",
-        "loki/magento2-components": "^2.0",
         "yireo/magento2-googletagmanager2": "^3.10"
     },
     "license": [
