@@ -6,10 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.0.2] - 29 September 2025
+## [2.0.3] - 29 September 2025
 ### Fixed
 - Enable Alpine templates to call upon Yireo GTM properly
 - Failsafe for when store is not present yet
+
+## [2.0.2] - 27 September 2025
 - Change container to block
 - Prevent empty quote from causing exception
 - New structure of localStorage listener
