@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.4] - 08 October 2025
+### Fixed
+- Do not apply hyva handle, but just copy all XML layout changes
+
 ## [2.0.3] - 29 September 2025
 ### Fixed
 - Enable Alpine templates to call upon Yireo GTM properly
