@@ -12,11 +12,6 @@
         "Loki_CssUtils",
         "Loki_FieldComponents",
         "Loki_MapComponents",
-        "Magento_Backend",
-        "Magento_Catalog",
-        "Magento_CatalogInventory",
-        "Magento_CatalogSearch",
-        "Magento_Checkout",
         "Magento_CheckoutAgreements",
         "Magento_Config",
         "Magento_ConfigurableProduct",
@@ -33,8 +28,7 @@
         "Magento_Tax",
         "Magento_Vault",
         "Yireo_CspUtilities",
-        "Yireo_GoogleTagManager2",
-        "Yireo_HyvaThemeAutoRegistration"
+        "Yireo_GoogleTagManager2"
     ],
     "components": [],
     "config": [],
