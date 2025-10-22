@@ -1,6 +1,7 @@
 {
     "sequence": [
         "LokiCheckout_Core",
+        "Loki_Components",
         "Magento_Checkout",
         "Magento_Store",
         "Yireo_GoogleTagManager2"
@@ -12,6 +13,11 @@
         "Loki_CssUtils",
         "Loki_FieldComponents",
         "Loki_MapComponents",
+        "Magento_Backend",
+        "Magento_Catalog",
+        "Magento_CatalogInventory",
+        "Magento_CatalogSearch",
+        "Magento_Checkout",
         "Magento_CheckoutAgreements",
         "Magento_Config",
         "Magento_ConfigurableProduct",
