@@ -3,6 +3,9 @@
     "version": "2.0.5",
     "description": "N/A",
     "type": "magento2-module",
+    "keywords": [
+        "loki-core"
+    ],
     "require": {
         "loki/magento2-components": "^2.0",
         "magento/framework": "^102.0 || ^103.0",
