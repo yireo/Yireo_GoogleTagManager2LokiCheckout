@@ -4,7 +4,8 @@
     "description": "N/A",
     "type": "magento2-module",
     "keywords": [
-        "loki-checkout-other"
+        "loki-checkout",
+        "loki-checkout-category-other"
     ],
     "require": {
         "loki/magento2-components": "^2.0",
