@@ -4,7 +4,7 @@
     "description": "N/A",
     "type": "magento2-module",
     "keywords": [
-        "loki-core"
+        "loki-checkout-other"
     ],
     "require": {
         "loki/magento2-components": "^2.0",
