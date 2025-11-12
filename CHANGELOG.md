@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.6] - 12 November 2025
+### Fixed
+- Rename LokiLocalStorage to LocalStorage
+- Update keywords
+- Update composer keywords
+- Update composer keywords
+
 ## [2.0.5] - 22 October 2025
 ### Fixed
 - Update MODULE.json with PHPCS severity 8
