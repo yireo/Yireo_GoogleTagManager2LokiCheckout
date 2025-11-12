@@ -1,7 +1,7 @@
 <script>
     document.addEventListener('loki:init:localstorage-store', () => {
         Alpine.effect(() => {
-            const checkoutSection = Alpine.store('LokiLocalStorage').get('loki-checkout');
+            const checkoutSection = Alpine.store('LocalStorage').get('loki-checkout');
             if (!checkoutSection) {
                 return;
             }
