@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.7] - 17 February 2026
+### Fixed
+- `await` for `Alpine.store('LocalStorage').get('loki-checkout')`
+
 ## [2.0.6] - 12 November 2025
 ### Fixed
 - Rename LokiLocalStorage to LocalStorage
