@@ -1,4 +1,6 @@
 {
+    "description": "Integration of Yireo GoogleTagManager2 into LokiCheckout",
+    "integration": true,
     "sequence": [
         "LokiCheckout_Core",
         "Loki_Components",
