@@ -12,7 +12,8 @@
         "loki-checkout/magento2-core": "^2.3",
         "magento/framework": "^102.0 || ^103.0",
         "magento/module-checkout": "^100.0",
-        "yireo/magento2-googletagmanager2": "^3.10"
+        "yireo/magento2-googletagmanager2": "^3.10",
+        "php": ">=8.2 <8.6"
     },
     "license": [
         "OSL-3.0"
