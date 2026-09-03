@@ -1,5 +1,13 @@
 # Yireo_GoogleTagManager2LokiCheckout
 
+<!-- badges.specs.start -->
+![Magento version](https://img.shields.io/badge/Magento-2.4.6%20%7C%202.4.9-orange)
+![PHP version](https://img.shields.io/badge/PHP-8.2%E2%80%938.5-777BB4)
+![License](https://img.shields.io/badge/License-OSL--3.0-blue)
+![Latest Version](https://img.shields.io/packagist/v/yireo/magento2-googletagmanager2-loki-checkout)
+<!-- badges.specs.end -->
+
+
 **This Magento 2 module adds additional logic of the [Yireo GoogleTagManager 2](https://github.com/yireo/Yireo_GoogleTagManager2) to the [Yireo Loki Checkout](https://loki-checkout.com/).**
 
 [![Latest Stable Version](https://poser.pugx.org/yireo/magento2-googletagmanager2-loki-checkout/v)](//packagist.org/packages/yireo/magento2-googletagmanager2-loki-checkout) [![Total Downloads](https://poser.pugx.org/yireo/magento2-googletagmanager2-loki-checkout/downloads)](//packagist.org/packages/yireo/magento2-googletagmanager2-loki-checkout)  [![License](https://poser.pugx.org/yireo/magento2-googletagmanager2-loki-checkout/license)](//packagist.org/packages/yireo/magento2-googletagmanager2-loki-checkout)
@@ -41,3 +49,13 @@ If you require professional support, please contact Yireo:
 
 Yireo is a Dutch company focused on Magento development, training and extension development, actively maintaining various open-source Magento projects. 
 
+
+## Current status
+
+<!-- badges.test.start -->
+![Static Tests](https://img.shields.io/github/actions/workflow/status/yireo/Yireo_GoogleTagManager2LokiCheckout/static-tests.yml?label=static-tests)
+![Unit Tests](https://img.shields.io/github/actions/workflow/status/yireo/Yireo_GoogleTagManager2LokiCheckout/unit-tests.yml?label=unit-tests)
+![Integration Tests](https://img.shields.io/github/actions/workflow/status/yireo/Yireo_GoogleTagManager2LokiCheckout/integration-tests.yml?label=integration-tests)
+![Playwright](https://img.shields.io/github/actions/workflow/status/yireo/Yireo_GoogleTagManager2LokiCheckout/playwright.yml?label=playwright)
+![DI Compilation](https://img.shields.io/github/actions/workflow/status/yireo/Yireo_GoogleTagManager2LokiCheckout/compile.yml?label=compile)
+<!-- badges.test.end -->
