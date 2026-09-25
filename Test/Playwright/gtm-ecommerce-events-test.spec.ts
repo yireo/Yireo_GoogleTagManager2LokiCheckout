@@ -1,4 +1,4 @@
-import {test, expect, configureGtm, addProductToCart, getProductUrlFromCart} from './lib/gtm-objects';
+import {test, expect, configureGtm, addProductToCart, getProductUrlFromCart} from '@yireo-googletagmanager/gtm-objects';
 
 test.describe('GTM ecommerce events', function () {
     test.beforeEach(async function ({page}) {
