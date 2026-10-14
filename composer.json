@@ -8,15 +8,16 @@
         "loki-checkout-category-other"
     ],
     "require": {
-        "loki/magento2-components": "^2.0",
         "loki-checkout/magento2-core": "^2.3",
+        "loki/magento2-components": "^2.0",
         "magento/framework": "^102.0 || ^103.0",
         "magento/module-checkout": "^100.0",
-        "yireo/magento2-googletagmanager2": "^3.10",
-        "php": ">=8.2 <8.6"
+        "php": ">=8.2 <8.6",
+        "yireo/magento2-googletagmanager2": "^3.10"
     },
     "require-dev": {
-        "loki-checkout/magento2-functional-tests": "@dev"
+        "loki-checkout/magento2-functional-tests": "@dev",
+        "loki/magento2-functional-tests": "@dev"
     },
     "license": [
         "OSL-3.0"
