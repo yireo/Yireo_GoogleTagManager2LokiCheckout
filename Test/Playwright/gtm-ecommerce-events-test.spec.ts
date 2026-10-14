@@ -1,8 +1,34 @@
-import {test, expect, configureGtm, addProductToCart, getProductUrlFromCart} from '@yireo-googletagmanager/gtm-objects';
+import {test, expect, configureGtm, addProductToCart} from '@yireo-googletagmanager/gtm-objects';
+import {Page} from '@playwright/test';
+
+/**
+ * Wait for the frontend scripts to be initialized, so that clicks are handled by JavaScript
+ */
+async function settle(page: Page) {
+    await page.waitForLoadState('networkidle').catch(() => undefined);
+    await page.waitForTimeout(1500);
+}
+
+/**
+ * Return the non-SEO URL of the first product in the cart
+ *
+ * SEO URLs (like /product.html) can not be used, because the PHP built-in webserver in CI serves any URL with
+ * a file extension as a static file. The product ID is taken from the "Edit" link of the cart item instead.
+ */
+async function getProductViewUrlFromCart(page: Page): Promise<string> {
+    await page.goto('/checkout/cart/');
+    const editLink = page.locator('#shopping-cart-table .action-edit').first();
+    await expect(editLink, 'Edit link in cart').toBeAttached();
+
+    const productId = (await editLink.getAttribute('href'))?.match(/\/product_id\/(\d+)/)?.[1];
+    expect(productId, 'Product ID in edit link of cart item').toBeTruthy();
+
+    return '/catalog/product/view/id/' + productId + '/';
+}
 
 test.describe('GTM ecommerce events', function () {
     test.beforeEach(async function ({page}) {
-        await configureGtm(page);
+        await configureGtm(page, {product: true});
         await addProductToCart(page);
     });
 
@@ -20,7 +46,7 @@ test.describe('GTM ecommerce events', function () {
     });
 
     test('pushes view_item and add_to_cart events on the product page', async function ({page, dataLayer}) {
-        const productUrl = await getProductUrlFromCart(page);
+        const productUrl = await getProductViewUrlFromCart(page);
         await page.goto(productUrl);
 
         await dataLayer.expectState({page_type: 'product'});
@@ -31,6 +57,7 @@ test.describe('GTM ecommerce events', function () {
 
         const addToCartButton = page.locator('#product-addtocart-button');
         await expect(addToCartButton).toBeEnabled();
+        await settle(page);
         await addToCartButton.click();
 
         const addToCart = await dataLayer
@@ -56,7 +83,11 @@ test.describe('GTM ecommerce events', function () {
             .first();
 
         await expect(removeButton, 'Remove button in cart').toBeVisible();
+        await settle(page);
+
+        const removeRequest = page.waitForResponse(response => response.url().includes('/checkout/cart/delete'));
         await removeButton.click();
+        await removeRequest;
         await page.waitForLoadState('domcontentloaded');
 
         await dataLayer.event('remove_from_cart').toHaveItem({item_id: sku});
