@@ -23,8 +23,9 @@ if [ "${VALIDATE_GITHUB_TOKEN:-0}" = "1" ]; then
 fi
 
 if [ -n "${GITLAB_TOKEN:-}" ]; then
-  composer config gitlab-domains gitlab.yireo.com
+  composer config gitlab-domains gitlab.yireo.com gitlab.loki-extensions.com
   composer config --global --auth gitlab-token.gitlab.yireo.com "$GITLAB_TOKEN"
+  composer config --global --auth gitlab-token.gitlab.loki-extensions.com "$GITLAB_TOKEN"
   composer config repositories.loki-extensions composer https://gitlab.yireo.com/api/v4/group/loki-extensions/-/packages/composer/packages.json
   composer config repositories.loki-third-party composer https://gitlab.yireo.com/api/v4/group/loki-third-party/-/packages/composer/packages.json
   composer config repositories.loki-checkout composer https://gitlab.yireo.com/api/v4/group/loki-checkout/-/packages/composer/packages.json
