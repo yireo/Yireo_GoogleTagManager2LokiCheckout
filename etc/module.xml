@@ -3,7 +3,6 @@
     <module name="Yireo_GoogleTagManager2LokiCheckout">
         <sequence>
             <module name="LokiCheckout_Core"/>
-            <module name="Loki_Components"/>
             <module name="Magento_Checkout"/>
             <module name="Magento_Store"/>
             <module name="Yireo_GoogleTagManager2"/>
