@@ -42,5 +42,7 @@
     "config": [],
     "tests": [],
     "module_name": "Yireo_GoogleTagManager2LokiCheckout",
-    "composer_name": "yireo/magento2-googletagmanager2-loki-checkout"
+    "composer_name": "yireo/magento2-googletagmanager2-loki-checkout",
+    "phpcs_severity": "8",
+    "phpstan_level": "3"
 }
