@@ -3,7 +3,6 @@
     "integration": true,
     "sequence": [
         "LokiCheckout_Core",
-        "Loki_Components",
         "Magento_Checkout",
         "Magento_Store",
         "Yireo_GoogleTagManager2"
