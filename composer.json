@@ -14,6 +14,9 @@
         "php": ">=8.2 <8.6",
         "yireo/magento2-googletagmanager2": "^3.10"
     },
+    "suggest": {
+        "loki-checkout/magento2-csp": "Adds CSP nonces to inline scripts on a strict checkout CSP"
+    },
     "require-dev": {
         "loki-checkout/magento2-functional-tests": "@dev",
         "loki/magento2-functional-tests": "@dev"

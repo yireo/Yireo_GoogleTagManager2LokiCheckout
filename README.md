@@ -26,6 +26,9 @@ composer require yireo/magento2-googletagmanager2-loki-checkout
 bin/magento module:enable Yireo_GoogleTagManager2LokiCheckout
 ```
 
+### Content Security Policy
+When the checkout is running with a strict Content Security Policy (CSP), make sure to also install the module `LokiCheckout_Csp` (`loki-checkout/magento2-csp`), so that inline scripts receive the proper CSP nonces.
+
 ## Support & Professional Services
 
 This extension is released as **free and open source software**.  
