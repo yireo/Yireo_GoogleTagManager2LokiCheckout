@@ -8,6 +8,7 @@
         "loki-checkout-category-other"
     ],
     "require": {
+        "ext-json": "*",
         "loki-checkout/magento2-core": "^2.3",
         "magento/framework": "^102.0 || ^103.0",
         "magento/module-checkout": "^100.0",
