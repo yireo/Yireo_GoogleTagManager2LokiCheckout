@@ -24,6 +24,7 @@ use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Yireo\GoogleTagManager2\DataLayer\Event\AddPaymentInfo;
 use Yireo\GoogleTagManager2\DataLayer\Event\AddPaymentInfoFactory;
+use Yireo\GoogleTagManager2\DataLayer\Event\AddShippingInfo;
 use Yireo\GoogleTagManager2\DataLayer\Event\BeginCheckout;
 use Yireo\GoogleTagManager2LokiCheckout\Plugin\AppendGtmEventsToLokiCheckoutSectionPlugin;
 use Yireo\IntegrationTestHelper\Test\Integration\Traits\AssertInterceptorPluginIsRegistered;
@@ -46,11 +47,29 @@ final class AppendGtmEventsToLokiCheckoutSectionPluginTest extends TestCase
 
     #[Config('googletagmanager2/settings/enabled', '0', ScopeInterface::SCOPE_STORE)]
     #[Config('googletagmanager2/settings/id', 'GTM-TEST', ScopeInterface::SCOPE_STORE)]
-    public function testDisabledGtmLeavesSectionDataUnchanged(): void
+    #[DataFixture(ProductFixture::class, as: 'product')]
+    #[DataFixture(GuestCartFixture::class, as: 'cart')]
+    #[DataFixture(AddProductToCartFixture::class, ['cart_id' => '$cart.id$', 'product_id' => '$product.id$'])]
+    public function testDisabledGtmLeavesSectionDataUnchangedAndSkipsEventGeneration(): void
     {
+        $this->loadQuoteIntoSession();
+        $beginCheckout = $this->createMock(BeginCheckout::class);
+        $beginCheckout->expects(self::never())->method('get');
+        $addShippingInfo = $this->createMock(AddShippingInfo::class);
+        $addShippingInfo->expects(self::never())->method('get');
+        $addPaymentInfoFactory = $this->createMock(AddPaymentInfoFactory::class);
+        $addPaymentInfoFactory->expects(self::never())->method('create');
+
         $objectManager = Bootstrap::getObjectManager();
         $sectionData = ['customer_email' => 'guest@example.com'];
-        $plugin = $objectManager->get(AppendGtmEventsToLokiCheckoutSectionPlugin::class);
+        $plugin = $objectManager->create(
+            AppendGtmEventsToLokiCheckoutSectionPlugin::class,
+            [
+                'beginCheckout' => $beginCheckout,
+                'addShippingInfo' => $addShippingInfo,
+                'addPaymentInfoFactory' => $addPaymentInfoFactory,
+            ]
+        );
 
         $result = $plugin->afterGetSectionData($objectManager->get(Checkout::class), $sectionData);
 
@@ -128,6 +147,40 @@ final class AppendGtmEventsToLokiCheckoutSectionPluginTest extends TestCase
         self::assertInstanceOf(AddPaymentInfo::class, $firstEvent);
         self::assertInstanceOf(AddPaymentInfo::class, $secondEvent);
         self::assertNotSame($firstEvent, $secondEvent);
+    }
+
+    #[Config('googletagmanager2/settings/enabled', '1', ScopeInterface::SCOPE_STORE)]
+    #[Config('googletagmanager2/settings/id', 'GTM-TEST', ScopeInterface::SCOPE_STORE)]
+    #[DataFixture(ProductFixture::class, as: 'product')]
+    #[DataFixture(GuestCartFixture::class, as: 'cart')]
+    #[DataFixture(AddProductToCartFixture::class, ['cart_id' => '$cart.id$', 'product_id' => '$product.id$'])]
+    public function testPluginCreatesPaymentEventOncePerSectionCall(): void
+    {
+        $quote = $this->loadQuoteIntoSession();
+        $objectManager = Bootstrap::getObjectManager();
+        $factory = $objectManager->get(AddPaymentInfoFactory::class);
+        $factoryMock = $this->createMock(AddPaymentInfoFactory::class);
+        $createCount = 0;
+        $factoryMock->expects(self::exactly(2))
+            ->method('create')
+            ->willReturnCallback(static function () use ($factory, &$createCount): AddPaymentInfo {
+                $createCount++;
+                return $factory->create();
+            });
+        $plugin = $objectManager->create(
+            AppendGtmEventsToLokiCheckoutSectionPlugin::class,
+            ['addPaymentInfoFactory' => $factoryMock]
+        );
+        $checkout = $objectManager->get(Checkout::class);
+
+        foreach (['checkmo', 'banktransfer'] as $paymentMethod) {
+            $expectedCreateCount = $createCount + 1;
+            $quote->getPayment()->setMethod($paymentMethod);
+            $result = $plugin->afterGetSectionData($checkout, []);
+            $events = array_column(array_filter($result['gtm_events'], 'is_array'), null, 'event');
+            self::assertSame($expectedCreateCount, $createCount);
+            self::assertSame($paymentMethod, $events['add_payment_info']['ecommerce']['payment_type'] ?? null);
+        }
     }
 
     private function loadQuoteIntoSession(): Quote
