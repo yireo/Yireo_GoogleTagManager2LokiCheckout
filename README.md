@@ -27,7 +27,7 @@ bin/magento module:enable Yireo_GoogleTagManager2LokiCheckout
 ```
 
 ### Content Security Policy
-When the checkout is running with a strict Content Security Policy (CSP), make sure to also install the module `LokiCheckout_Csp` (`loki-checkout/magento2-csp`), so that inline scripts receive the proper CSP nonces.
+The inline scripts of this module are rendered within the Loki block `loki.script`. LokiCheckout_Core adds CSP nonces to the inline scripts of all `loki*` blocks, so no additional module is needed for a strict Content Security Policy (CSP).
 
 ## Support & Professional Services
 
