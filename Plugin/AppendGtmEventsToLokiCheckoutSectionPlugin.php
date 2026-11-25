@@ -25,38 +25,60 @@ class AppendGtmEventsToLokiCheckoutSectionPlugin
 
     public function afterGetSectionData(Checkout $checkoutSection, array $sectionData): array
     {
-        if (!$this->config->isEnabled()) {
-            return $sectionData;
+        try {
+            if (false === $this->config->isEnabled()) {
+                return $sectionData;
+            }
+
+            $sectionData['gtm_events'] = $this->getGtmEvents();
+        } catch (Throwable $exception) {
+            $this->logFailure('gtm_events', $exception);
         }
 
-        $sectionData['gtm_events'] = $this->getGtmEvents();
         return $sectionData;
     }
 
     private function getGtmEvents(): array
     {
-        $events = [];
         if (false === (bool)$this->checkoutSession->hasQuote()) {
-            return $events;
+            return [];
         }
 
-        $events[] = $this->getEvent('begin_checkout', fn () => $this->getBeginCheckoutInfo());
-        $events[] = $this->getEvent('add_shipping_info', fn () => $this->getShippingInfo());
-        $events[] = $this->getEvent('add_payment_info', fn () => $this->getPaymentInfo());
-
-        return $events;
+        return [
+            $this->getEvent('begin_checkout', fn () => $this->getBeginCheckoutInfo()),
+            $this->getEvent('add_shipping_info', fn () => $this->getShippingInfo()),
+            $this->getEvent('add_payment_info', fn () => $this->getPaymentInfo()),
+        ];
     }
 
     private function getEvent(string $eventName, callable $callback): false|array
     {
         try {
-            return $callback();
-        } catch (Throwable $e) {
-            $this->logger->warning(
-                'Yireo_GoogleTagManager2LokiCheckout: Failed to generate GTM event "' . $eventName . '": '
-                . $e->getMessage()
-            );
+            $event = $callback();
+        } catch (Throwable $exception) {
+            $this->logFailure($eventName, $exception);
             return false;
+        }
+
+        if (is_array($event) && false === json_encode($event)) {
+            $this->logFailure($eventName, null);
+            return false;
+        }
+
+        return $event;
+    }
+
+    private function logFailure(string $eventName, ?Throwable $exception): void
+    {
+        $reason = $exception instanceof Throwable ? get_class($exception) : 'data is not JSON serializable';
+
+        try {
+            $this->logger->warning(
+                'Yireo_GoogleTagManager2LokiCheckout: Failed to generate GTM event "' . $eventName . '" ('
+                . $reason . ')'
+            );
+        } catch (Throwable) {
+            return;
         }
     }
 

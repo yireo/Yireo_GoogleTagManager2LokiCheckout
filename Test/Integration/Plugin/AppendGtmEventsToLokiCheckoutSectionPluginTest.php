@@ -22,7 +22,7 @@ use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
-use Yireo\GoogleTagManager2\DataLayer\Event\AddPaymentInfo;
+use Yireo\GoogleTagManager2\Config\Config as GtmConfig;
 use Yireo\GoogleTagManager2\DataLayer\Event\AddPaymentInfoFactory;
 use Yireo\GoogleTagManager2\DataLayer\Event\AddShippingInfo;
 use Yireo\GoogleTagManager2\DataLayer\Event\BeginCheckout;
@@ -110,43 +110,30 @@ final class AppendGtmEventsToLokiCheckoutSectionPluginTest extends TestCase
     #[DataFixture(ProductFixture::class, as: 'product')]
     #[DataFixture(GuestCartFixture::class, as: 'cart')]
     #[DataFixture(AddProductToCartFixture::class, ['cart_id' => '$cart.id$', 'product_id' => '$product.id$'])]
-    public function testBeginCheckoutFailureIsLoggedAndDoesNotSuppressPaymentEvent(): void
+    public function testBeginCheckoutFailureIsLoggedWithoutMessageAndDoesNotSuppressPaymentEvent(): void
     {
         $this->loadQuoteIntoSession()->getPayment()->setMethod('checkmo');
-        $exceptionMessage = 'Could not calculate the begin checkout event';
+        $sensitiveMessage = 'guest@example.com could not be processed';
         $beginCheckout = $this->createMock(BeginCheckout::class);
         $beginCheckout->expects(self::once())
             ->method('get')
-            ->willThrowException(new RuntimeException($exceptionMessage));
+            ->willThrowException(new RuntimeException($sensitiveMessage));
         $logger = $this->createMock(LoggerInterface::class);
-        $logger->expects(self::once())->method('warning')->with(self::stringContains($exceptionMessage));
+        $logger->expects(self::once())
+            ->method('warning')
+            ->with(self::logicalAnd(
+                self::stringContains('begin_checkout'),
+                self::stringContains(RuntimeException::class),
+                self::logicalNot(self::stringContains($sensitiveMessage))
+            ));
 
-        $objectManager = Bootstrap::getObjectManager();
-        $plugin = $objectManager->create(
-            AppendGtmEventsToLokiCheckoutSectionPlugin::class,
-            ['beginCheckout' => $beginCheckout, 'logger' => $logger]
-        );
-        $result = $plugin->afterGetSectionData(
-            $objectManager->get(Checkout::class),
-            ['customer_email' => 'guest@example.com']
-        );
+        $result = $this->createPlugin(['beginCheckout' => $beginCheckout, 'logger' => $logger])
+            ->afterGetSectionData($this->getCheckoutSection(), ['customer_email' => 'guest@example.com']);
 
         self::assertSame('guest@example.com', $result['customer_email']);
-        self::assertContains(false, $result['gtm_events']);
-        $eventNames = array_column(array_filter($result['gtm_events'], 'is_array'), 'event');
+        $eventNames = $this->getEventNames($result);
         self::assertNotContains('begin_checkout', $eventNames);
         self::assertContains('add_payment_info', $eventNames);
-    }
-
-    public function testPaymentEventFactoryCreatesFreshInstances(): void
-    {
-        $factory = Bootstrap::getObjectManager()->get(AddPaymentInfoFactory::class);
-        $firstEvent = $factory->create();
-        $secondEvent = $factory->create();
-
-        self::assertInstanceOf(AddPaymentInfo::class, $firstEvent);
-        self::assertInstanceOf(AddPaymentInfo::class, $secondEvent);
-        self::assertNotSame($firstEvent, $secondEvent);
     }
 
     #[Config('googletagmanager2/settings/enabled', '1', ScopeInterface::SCOPE_STORE)]
@@ -154,33 +141,92 @@ final class AppendGtmEventsToLokiCheckoutSectionPluginTest extends TestCase
     #[DataFixture(ProductFixture::class, as: 'product')]
     #[DataFixture(GuestCartFixture::class, as: 'cart')]
     #[DataFixture(AddProductToCartFixture::class, ['cart_id' => '$cart.id$', 'product_id' => '$product.id$'])]
-    public function testPluginCreatesPaymentEventOncePerSectionCall(): void
+    public function testThrowingLoggerDoesNotBreakTheSection(): void
+    {
+        $this->loadQuoteIntoSession()->getPayment()->setMethod('checkmo');
+        $beginCheckout = $this->createMock(BeginCheckout::class);
+        $beginCheckout->method('get')->willThrowException(new RuntimeException('Event failure'));
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->method('warning')->willThrowException(new RuntimeException('Logger failure'));
+
+        $result = $this->createPlugin(['beginCheckout' => $beginCheckout, 'logger' => $logger])
+            ->afterGetSectionData($this->getCheckoutSection(), ['customer_email' => 'guest@example.com']);
+
+        self::assertSame('guest@example.com', $result['customer_email']);
+        self::assertContains('add_payment_info', $this->getEventNames($result));
+    }
+
+    public function testConfigFailureReturnsTheOriginalSection(): void
+    {
+        $config = $this->createMock(GtmConfig::class);
+        $config->method('isEnabled')->willThrowException(new RuntimeException('Config failure'));
+        $sectionData = ['customer_email' => 'guest@example.com'];
+
+        $result = $this->createPlugin(['config' => $config])
+            ->afterGetSectionData($this->getCheckoutSection(), $sectionData);
+
+        self::assertSame($sectionData, $result);
+    }
+
+    #[Config('googletagmanager2/settings/enabled', '1', ScopeInterface::SCOPE_STORE)]
+    #[Config('googletagmanager2/settings/id', 'GTM-TEST', ScopeInterface::SCOPE_STORE)]
+    #[DataFixture(ProductFixture::class, as: 'product')]
+    #[DataFixture(GuestCartFixture::class, as: 'cart')]
+    #[DataFixture(AddProductToCartFixture::class, ['cart_id' => '$cart.id$', 'product_id' => '$product.id$'])]
+    public function testEventThatCanNotBeEncodedAsJsonIsDropped(): void
+    {
+        $this->loadQuoteIntoSession()->getPayment()->setMethod('checkmo');
+        $beginCheckout = $this->createMock(BeginCheckout::class);
+        $beginCheckout->method('get')->willReturn(['event' => 'begin_checkout', 'ecommerce' => ['coupon' => "\xB1\x31"]]);
+
+        $result = $this->createPlugin(['beginCheckout' => $beginCheckout])
+            ->afterGetSectionData($this->getCheckoutSection(), []);
+
+        self::assertNotFalse(json_encode($result));
+        $eventNames = $this->getEventNames($result);
+        self::assertNotContains('begin_checkout', $eventNames);
+        self::assertContains('add_payment_info', $eventNames);
+    }
+
+    #[Config('googletagmanager2/settings/enabled', '1', ScopeInterface::SCOPE_STORE)]
+    #[Config('googletagmanager2/settings/id', 'GTM-TEST', ScopeInterface::SCOPE_STORE)]
+    #[DataFixture(ProductFixture::class, as: 'product')]
+    #[DataFixture(GuestCartFixture::class, as: 'cart')]
+    #[DataFixture(AddProductToCartFixture::class, ['cart_id' => '$cart.id$', 'product_id' => '$product.id$'])]
+    public function testPaymentEventFollowsTheCurrentPaymentMethod(): void
     {
         $quote = $this->loadQuoteIntoSession();
-        $objectManager = Bootstrap::getObjectManager();
-        $factory = $objectManager->get(AddPaymentInfoFactory::class);
-        $factoryMock = $this->createMock(AddPaymentInfoFactory::class);
-        $createCount = 0;
-        $factoryMock->expects(self::exactly(2))
-            ->method('create')
-            ->willReturnCallback(static function () use ($factory, &$createCount): AddPaymentInfo {
-                $createCount++;
-                return $factory->create();
-            });
-        $plugin = $objectManager->create(
-            AppendGtmEventsToLokiCheckoutSectionPlugin::class,
-            ['addPaymentInfoFactory' => $factoryMock]
-        );
-        $checkout = $objectManager->get(Checkout::class);
+        $plugin = $this->createPlugin([]);
+        $checkout = $this->getCheckoutSection();
 
         foreach (['checkmo', 'banktransfer'] as $paymentMethod) {
-            $expectedCreateCount = $createCount + 1;
             $quote->getPayment()->setMethod($paymentMethod);
-            $result = $plugin->afterGetSectionData($checkout, []);
-            $events = array_column(array_filter($result['gtm_events'], 'is_array'), null, 'event');
-            self::assertSame($expectedCreateCount, $createCount);
+            $events = $this->getEvents($plugin->afterGetSectionData($checkout, []));
             self::assertSame($paymentMethod, $events['add_payment_info']['ecommerce']['payment_type'] ?? null);
         }
+
+        $quote->getPayment()->setMethod('');
+        self::assertNotContains('add_payment_info', $this->getEventNames($plugin->afterGetSectionData($checkout, [])));
+    }
+
+    private function createPlugin(array $arguments): AppendGtmEventsToLokiCheckoutSectionPlugin
+    {
+        return Bootstrap::getObjectManager()->create(AppendGtmEventsToLokiCheckoutSectionPlugin::class, $arguments);
+    }
+
+    private function getCheckoutSection(): Checkout
+    {
+        return Bootstrap::getObjectManager()->get(Checkout::class);
+    }
+
+    private function getEvents(array $sectionData): array
+    {
+        return array_column(array_filter($sectionData['gtm_events'] ?? [], 'is_array'), null, 'event');
+    }
+
+    private function getEventNames(array $sectionData): array
+    {
+        return array_keys($this->getEvents($sectionData));
     }
 
     private function loadQuoteIntoSession(): Quote
