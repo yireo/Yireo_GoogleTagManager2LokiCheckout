@@ -14,16 +14,13 @@
         "magento/module-store": "^101.1",
         "php": ">=8.2 <8.6",
         "psr/log": "^1.0 || ^2.0 || ^3.0",
-        "yireo/magento2-googletagmanager2": "^3.10"
-    },
-    "suggest": {
-        "loki-checkout/magento2-csp": "Adds CSP nonces to inline scripts on a strict checkout CSP"
+        "yireo/magento2-googletagmanager2": "^3.10.9"
     },
     "require-dev": {
         "loki-checkout/magento2-functional-tests": "@dev",
         "loki/magento2-functional-tests": "@dev",
         "magento/module-quote": "^101.2",
-        "phpunit/phpunit": "^10.5",
+        "phpunit/phpunit": "^10.5 || ^12.0",
         "yireo/magento2-integration-test-helper": "~0.0"
     },
     "license": [
