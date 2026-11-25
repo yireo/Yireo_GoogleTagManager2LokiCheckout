@@ -6,6 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.8] - 25 November 2026
+### Changed
+- Drop PHP 8.1 support and add PHP 8.5 support
+- Require `yireo/magento2-googletagmanager2` 3.10.9 or newer and declare the dependency on `loki-checkout/magento2-core`
+- Remove the unneeded dependency on `Loki_Components`
+- README: LokiCheckout_Core already adds CSP nonces to the inline scripts, so no extra CSP module is needed
+
+### Fixed
+- GTM checkout events were added to the checkout section even when Google Tag Manager was disabled in the configuration
+- A failure while generating one GTM event (`begin_checkout`, `add_shipping_info` or `add_payment_info`) no longer breaks the checkout section or drops the other events
+- Logging of failed GTM events no longer includes exception messages that may contain personal data
+- Events that can not be encoded as JSON are dropped instead of breaking the checkout section
+- The `add_payment_info` event now uses a fresh instance per request, so a cleared payment method is reported correctly
+
 ## [2.0.7] - 17 February 2026
 ### Fixed
 - `await` for `Alpine.store('LocalStorage').get('loki-checkout')`
