@@ -20,7 +20,8 @@
     },
     "require-dev": {
         "loki-checkout/magento2-functional-tests": "@dev",
-        "loki/magento2-functional-tests": "@dev"
+        "loki/magento2-functional-tests": "@dev",
+        "yireo/magento2-integration-test-helper": "~0.0"
     },
     "license": [
         "OSL-3.0"
